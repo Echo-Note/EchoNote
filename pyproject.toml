@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A Django-powered personal blog site."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Web Environment",
@@ -60,6 +60,13 @@ dev = [
 Homepage = "https://github.com/yourname/echonote"
 Repository = "https://github.com/yourname/echonote"
 Issues = "https://github.com/yourname/echonote/issues"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["echo", "apps", "config"]
 
 [tool.black]
 line-length = 100
