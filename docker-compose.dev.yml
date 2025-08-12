@@ -1,0 +1,57 @@
+# 开发环境 Docker Compose 配置文件
+# 用于本地开发和测试 - 仅包含中间件服务
+
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库服务（开发环境）
+  postgres:
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+    container_name: echonote-postgres-dev
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=echonote
+      - POSTGRES_USER=echonote
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - ./docker/volumes/postgres:/var/lib/postgresql/data
+      - ./docker/postgres/init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - echonote-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U echonote -d echonote"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis 缓存服务（开发环境）
+  redis:
+    image: redis:7-alpine
+    container_name: echonote-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass password
+    volumes:
+      - ./docker/volumes/redis:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - echonote-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+networks:
+  echonote-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.26.0.0/16
