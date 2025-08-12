@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 12:09+0800\n"
+"POT-Creation-Date: 2025-08-12 15:26+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,174 @@ msgstr ""
 msgid "账号管理"
 msgstr "account management"
 
+#: apps/blog/apps.py:10
+msgid "博客系统"
+msgstr "Blog System"
+
+#: apps/blog/forms.py:30
+msgid "说点什么…"
+msgstr "Say something..."
+
+#: apps/blog/forms.py:49
+msgid "未登录用户需要提供昵称和邮箱"
+msgstr "Non-logged in users need to provide nickname and email"
+
+#: apps/blog/models.py:28
+msgid "分类名称"
+msgstr "Category Name"
+
+#: apps/blog/models.py:29
+msgid "描述"
+msgstr "Description"
+
+#: apps/blog/models.py:36
+msgid "父级"
+msgstr "Parent"
+
+#: apps/blog/models.py:40 apps/blog/models.py:41 apps/blog/models.py:84
+msgid "分类"
+msgstr "Category"
+
+#: apps/blog/models.py:75
+msgid "草稿"
+msgstr "Draft"
+
+#: apps/blog/models.py:76
+msgid "计划发布"
+msgstr "Scheduled"
+
+#: apps/blog/models.py:77
+msgid "已发布"
+msgstr "Published"
+
+#: apps/blog/models.py:79
+msgid "标题"
+msgstr "Title"
+
+#: apps/blog/models.py:81
+msgid "作者"
+msgstr "Author"
+
+#: apps/blog/models.py:86
+msgid "标签"
+msgstr "Tags"
+
+#: apps/blog/models.py:88
+msgid "正文 Markdown"
+msgstr "Content Markdown"
+
+#: apps/blog/models.py:89
+msgid "正文 HTML"
+msgstr "Content HTML"
+
+#: apps/blog/models.py:92
+msgid "封面图"
+msgstr "Cover Image"
+
+#: apps/blog/models.py:96
+msgid "状态"
+msgstr "Status"
+
+#: apps/blog/models.py:98
+msgid "发布时间"
+msgstr "Publish Time"
+
+#: apps/blog/models.py:100
+msgid "置顶/推荐"
+msgstr "Pinned/Featured"
+
+#: apps/blog/models.py:101
+msgid "浏览量"
+msgstr "Views"
+
+#: apps/blog/models.py:102
+msgid "阅读时长(分钟)"
+msgstr "Reading Time (minutes)"
+
+#: apps/blog/models.py:103
+msgid "允许评论"
+msgstr "Allow Comments"
+
+#: apps/blog/models.py:108 apps/blog/models.py:109 apps/blog/models.py:180
+msgid "文章"
+msgstr "Article"
+
+#: apps/blog/models.py:187
+msgid "用户"
+msgstr "User"
+
+#: apps/blog/models.py:195
+msgid "父评论"
+msgstr "Parent Comment"
+
+#: apps/blog/models.py:198
+msgid "昵称"
+msgstr "Nickname"
+
+#: apps/blog/models.py:199
+msgid "邮箱"
+msgstr "Email"
+
+#: apps/blog/models.py:201
+msgid "内容"
+msgstr "Content"
+
+#: apps/blog/models.py:202
+msgid "已审核"
+msgstr "Approved"
+
+#: apps/blog/models.py:203
+msgid "IP"
+msgstr "IP"
+
+#: apps/blog/models.py:204
+msgid "UA"
+msgstr "User Agent"
+
+#: apps/blog/models.py:207 apps/blog/models.py:208
+msgid "评论"
+msgstr "Comment"
+
+#: apps/blog/views.py:182
+msgid "评论已提交，待审核后显示。"
+msgstr "Comment submitted, will be displayed after approval."
+
+#: apps/blog/views.py:184
+msgid "评论提交失败，请检查表单信息。"
+msgstr "Comment submission failed, please check your form information."
+
 #: apps/common/apps.py:10
 msgid "通用模块"
 msgstr "common module"
+
+#: apps/common/models.py:28
+msgid "创建时间"
+msgstr "Created Time"
+
+#: apps/common/models.py:29
+msgid "更新时间"
+msgstr "Updated Time"
+
+#: apps/common/models.py:30
+msgid "版本"
+msgstr "Version"
+
+#: apps/common/models.py:50
+msgid "已删除"
+msgstr "Deleted"
+
+#: apps/common/models.py:51
+msgid "删除时间"
+msgstr "Deletion Time"
+
+#: apps/common/models.py:71
+msgid "SEO 标题"
+msgstr "SEO Title"
+
+#: apps/common/models.py:72
+msgid "SEO 描述"
+msgstr "SEO Description"
+
+#: apps/common/models.py:84
+msgid "Slug"
+msgstr "Slug"
