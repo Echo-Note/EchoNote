@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# 指向站点地图，便于搜索引擎发现网站结构
+{% url 'django.contrib.sitemaps.views.sitemap' as sitemap_url %}
+Sitemap: {{ request.scheme }}://{{ request.get_host }}{{ sitemap_url }}

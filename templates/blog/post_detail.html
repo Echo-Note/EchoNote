@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} - EchoNote{% endblock %}
+{% block meta %}
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}" />
+  <meta name="description" content="{{ post.meta_description|default:post.title }}" />
+  {% if post.meta_title %}
+    <meta property="og:title" content="{{ post.meta_title }}" />
+  {% else %}
+    <meta property="og:title" content="{{ post.title }}" />
+  {% endif %}
+  <meta property="og:description" content="{{ post.meta_description|default:post.title }}" />
+  {% if post.cover_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}" />
+  {% endif %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.meta_title|default:post.title|escapejs }}",
+    "datePublished": "{{ post.published_at|date:'c' }}",
+    "dateModified": "{{ post.updated_at|date:'c' }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ post.author.get_username|escapejs }}"
+    },
+    {% if post.cover_image %}
+    "image": ["{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}"],
+    {% endif %}
+    "url": "{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}",
+    "description": "{{ post.meta_description|default:post.title|escapejs }}"
+  }
+  </script>
+{% endblock %}
+{% block content %}
+  <article>
+    <header>
+      <h1>{{ post.title }}</h1>
+      <p class="post-meta">
+        {{ post.published_at|date:"Y-m-d H:i" }} · {{ post.author }} · 阅读 {{ post.reading_time }} 分钟 · 浏览 {{ post.views }}
+      </p>
+      {% if post.category %}
+        <p>分类：<a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></p>
+      {% endif %}
+      {% if post.tags.all %}
+        <p>
+          {% for t in post.tags.all %}
+            <a class="tag" href="{% url 'blog:tag' t.slug %}">#{{ t.name }}</a>
+          {% endfor %}
+        </p>
+      {% endif %}
+    </header>
+    {% if post.cover_image %}
+      <figure><img src="{{ post.cover_image.url }}" alt="{{ post.title }}" style="max-width:100%;height:auto;"/></figure>
+    {% endif %}
+    <section>
+      <div class="content">{{ post.body_html|safe }}</div>
+    </section>
+  </article>
+
+  <section>
+    <h3>评论</h3>
+    {% for c in comments %}
+      <div class="comment">
+        <strong>{{ c.user|default:c.nickname|default:"匿名" }}</strong>
+        <small> · {{ c.created_at|date:"Y-m-d H:i" }}</small>
+        <p>{{ c.content|linebreaks }}</p>
+        <p><a href="{{ post.get_absolute_url }}?reply_to={{ c.id }}#comment-form">回复</a></p>
+        {% for r in c.replies.all %}
+          {% if r.is_approved %}
+            <div class="comment" style="margin-left: 1rem;">
+              <strong>{{ r.user|default:r.nickname|default:"匿名" }}</strong>
+              <small> · {{ r.created_at|date:"Y-m-d H:i" }}</small>
+              <p>{{ r.content|linebreaks }}</p>
+              <p><a href="{{ post.get_absolute_url }}?reply_to={{ c.id }}#comment-form">回复</a></p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% empty %}
+      <p>暂无评论。</p>
+    {% endfor %}
+  </section>
+
+  {% if post.allow_comment %}
+  <section>
+    <h3>发表你的看法</h3>
+    <form id="comment-form" method="post" action="{% url 'blog:submit_comment' post.slug %}">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% if reply_to %}
+        <input type="hidden" name="parent_id" value="{{ reply_to.id }}" />
+        <p>正在回复：<strong>{{ reply_to.user|default:reply_to.nickname|default:"匿名" }}</strong> <a href="{{ post.get_absolute_url }}#comment-form">取消</a></p>
+      {% endif %}
+      <div class="grid">
+        <div>
+          <label>昵称{% if not request.user.is_authenticated %}*{% endif %}
+            {{ form.nickname }}
+          </label>
+        </div>
+        <div>
+          <label>邮箱{% if not request.user.is_authenticated %}*{% endif %}
+            {{ form.email }}
+          </label>
+        </div>
+      </div>
+      <label>内容*
+        {{ form.content }}
+      </label>
+      <button type="submit">提交评论</button>
+    </form>
+  </section>
+  {% endif %}
+{% endblock %}

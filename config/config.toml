@@ -1,0 +1,48 @@
+# EchoNote 配置文件（TOML）
+# 说明：本文件用于集中管理生产/开发环境的关键配置。
+# 优先级：此文件 > 环境变量(.env) > Django 默认值。
+
+[django]
+# 生产务必关闭调试
+# debug = false
+# 为安全起见，请替换为强随机值
+# secret_key = "请替换为安全的随机密钥"
+# 允许访问的域名
+# allowed_hosts = ["example.com", "www.example.com"]
+# CSRF 可信来源（如反向代理/域名）
+# csrf_trusted_origins = ["https://example.com"]
+
+[i18n]
+# 语言与时区
+# language_code = "zh-hans"
+# time_zone = "Asia/Shanghai"
+
+[database]
+# 数据库配置（推荐使用 PostgreSQL）
+ engine = "django.db.backends.postgresql"
+ name = "echonote"
+ user = "echonote"
+ password = "password"
+ host = "127.0.0.1"
+ port = 5432
+# 若未设置，将回退到 sqlite，本地开发可省略该项。
+
+[redis]
+# Redis 配置
+ host = "127.0.0.1"
+ port = 6380
+ db = 0
+ password = "password"
+# ssl = false
+# timeout = 5
+
+[static]
+# 静态资源配置
+# url = "/static/"
+# root = "/var/www/echonote/staticfiles"
+# storage = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+[media]
+# 媒体资源配置
+# url = "/media/"
+# root = "/var/www/echonote/media"

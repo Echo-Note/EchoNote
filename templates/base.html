@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}EchoNote{% endblock %}</title>
+  {% load static %}
+  {% block meta %}{% endblock %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <style>
+    .container { max-width: 960px; margin: 0 auto; }
+    .post-meta { color: #666; font-size: 0.9em; }
+    .tag { display: inline-block; padding: 2px 8px; margin-right: 6px; background: #f4f4f4; border-radius: 999px; font-size: 0.85em; }
+    .comment { padding: 0.75rem 1rem; background: #fafafa; border-radius: 8px; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="/">EchoNote</a></strong></li>
+      </ul>
+      <ul>
+        <li>
+          <form role="search" action="{% url 'blog:search' %}" method="get">
+            <input type="search" name="q" placeholder="搜索文章…" value="{{ q|default:'' }}" />
+          </form>
+        </li>
+        <li><a href="/admin/" target="_blank">管理后台</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="container">
+    <hr />
+    <small>© {{ now|date:'Y' }} EchoNote</small>
+  </footer>
+</body>
+</html>

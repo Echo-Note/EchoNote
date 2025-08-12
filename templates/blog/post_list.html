@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}文章列表 - EchoNote{% endblock %}
+{% block content %}
+  <h1>文章列表</h1>
+
+  {% if category %}
+    <p>分类：<strong>{{ category.name }}</strong></p>
+  {% endif %}
+  {% if tag %}
+    <p>标签：<strong>{{ tag.name }}</strong></p>
+  {% endif %}
+  {% if archive_year %}
+    <p>归档年份：<strong>{{ archive_year }}</strong></p>
+  {% endif %}
+  {% if q %}
+    <p>搜索关键词：<strong>{{ q }}</strong></p>
+  {% endif %}
+
+  {% for post in posts %}
+    <article>
+      <header>
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p class="post-meta">
+          {{ post.published_at|date:"Y-m-d H:i" }} · {{ post.author }} · 阅读 {{ post.reading_time }} 分钟 · 浏览 {{ post.views }}
+        </p>
+      </header>
+      {% if post.category %}
+        <p>分类：<a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></p>
+      {% endif %}
+      {% if post.tags.all %}
+        <p>
+          {% for t in post.tags.all %}
+            <a class="tag" href="{% url 'blog:tag' t.slug %}">#{{ t.name }}</a>
+          {% endfor %}
+        </p>
+      {% endif %}
+      <p><a href="{{ post.get_absolute_url }}">阅读全文 →</a></p>
+      <hr />
+    </article>
+  {% empty %}
+    <p>暂无文章。</p>
+  {% endfor %}
+
+  {% if posts.paginator %}
+    <nav aria-label="分页">
+      <ul class="pagination">
+        {% if posts.has_previous %}
+          <li><a href="?page={{ posts.previous_page_number }}{{ querystring|default:'' }}">上一页</a></li>
+        {% else %}
+          <li class="disabled"><span>上一页</span></li>
+        {% endif %}
+        <li><span>第 {{ posts.number }} / {{ posts.paginator.num_pages }} 页</span></li>
+        {% if posts.has_next %}
+          <li><a href="?page={{ posts.next_page_number }}{{ querystring|default:'' }}">下一页</a></li>
+        {% else %}
+          <li class="disabled"><span>下一页</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}
