@@ -255,3 +255,21 @@ CACHES = {
 # 会话配置示例（取消注释以启用）
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+
+# Authentication / Accounts
+# Use custom user model from apps.account
+AUTH_USER_MODEL = "account.User"
+
+# Redirects after login/logout
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "/account/login/"
+
+# Email backend (development): print emails to console
+# For production, configure a proper SMTP backend via TOML/ENV
+EMAIL_BACKEND = _cfg(
+    "email.backend", env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+)
+DEFAULT_FROM_EMAIL = _cfg(
+    "email.default_from", env("DEFAULT_FROM_EMAIL", default="no-reply@echonote.local")
+)

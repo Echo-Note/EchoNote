@@ -8,19 +8,131 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 15:26+0800\n"
+"POT-Creation-Date: 2025-08-12 16:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: apps/account/admin.py:10 apps/account/forms.py:14
+#: templates/account/login.html:17 templates/account/signup.html:27
+msgid "密码"
+msgstr "Password"
+
+#: apps/account/admin.py:11 apps/account/forms.py:15
+#: templates/account/signup.html:32
+msgid "确认密码"
+msgstr "Confirm Password"
+
+#: apps/account/admin.py:21 apps/account/forms.py:28
+msgid "两次输入的密码不一致"
+msgstr "The two password fields didn't match"
+
+#: apps/account/admin.py:49
+msgid "个人信息"
+msgstr "Personal Info"
+
+#: apps/account/admin.py:51
+msgid "权限"
+msgstr "Permissions"
+
+#: apps/account/admin.py:63
+msgid "重要日期"
+msgstr "Important Dates"
+
 #: apps/account/apps.py:10
 msgid "账号管理"
-msgstr "account management"
+msgstr "Account Management"
+
+#: apps/account/models.py:49 templates/account/signup.html:17
+msgid "名"
+msgstr "First Name"
+
+#: apps/account/models.py:50 templates/account/signup.html:22
+msgid "姓"
+msgstr "Last Name"
+
+#: apps/account/models.py:52
+msgid "工作人员状态"
+msgstr "Staff Status"
+
+#: apps/account/models.py:54
+msgid "指定用户是否可以登录到此管理站点。"
+msgstr "Designates whether the user can log into this admin site."
+
+#: apps/account/models.py:57
+msgid "激活"
+msgstr "Active"
+
+#: apps/account/models.py:59
+msgid "指定用户是否应被视为活动状态。取消选择而不是删除账户。"
+msgstr ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+
+#: apps/account/models.py:61
+msgid "加入时间"
+msgstr "Date Joined"
+
+#: apps/account/models.py:63
+msgid "邮箱已验证"
+msgstr "Email Verified"
+
+#: apps/account/models.py:71 apps/account/models.py:72 apps/blog/models.py:188
+msgid "用户"
+msgstr "User"
+
+#: apps/account/models.py:91 apps/blog/models.py:199
+#: templates/account/profile.html:12
+msgid "昵称"
+msgstr "Nickname"
+
+#: apps/account/models.py:92 templates/account/profile.html:17
+msgid "头像"
+msgstr "Avatar"
+
+#: apps/account/models.py:93 templates/account/profile.html:27
+msgid "简介"
+msgstr "Bio"
+
+#: apps/account/models.py:94
+msgid "个人网址"
+msgstr "Personal Website"
+
+#: apps/account/models.py:97 apps/account/models.py:98
+#: templates/account/profile.html:4 templates/account/profile.html:7
+msgid "个人资料"
+msgstr "Profile"
+
+#: apps/account/views.py:34
+msgid "注册成功，请前往邮箱完成验证。"
+msgstr ""
+"Registration successful. Please check your email to verify your account."
+
+#: apps/account/views.py:43
+msgid "请验证你的邮箱"
+msgstr "Please verify your email"
+
+#: apps/account/views.py:44
+#, python-brace-format
+msgid ""
+"点击以下链接以激活你的账户：\n"
+"{url}"
+msgstr ""
+"Click the following link to activate your account:\n"
+"{url}"
+
+#: apps/account/views.py:69
+msgid "邮箱验证成功，现在可以登录了。"
+msgstr "Email verification successful. You can now log in."
+
+#: apps/account/views.py:72
+msgid "验证链接无效或已过期。"
+msgstr "Verification link is invalid or has expired."
 
 #: apps/blog/apps.py:10
 msgid "博客系统"
@@ -46,7 +158,7 @@ msgstr "Description"
 msgid "父级"
 msgstr "Parent"
 
-#: apps/blog/models.py:40 apps/blog/models.py:41 apps/blog/models.py:84
+#: apps/blog/models.py:40 apps/blog/models.py:41 apps/blog/models.py:85
 msgid "分类"
 msgstr "Category"
 
@@ -66,87 +178,84 @@ msgstr "Published"
 msgid "标题"
 msgstr "Title"
 
-#: apps/blog/models.py:81
+#: apps/blog/models.py:80
+msgid "摘要"
+msgstr ""
+
+#: apps/blog/models.py:82
 msgid "作者"
 msgstr "Author"
 
-#: apps/blog/models.py:86
+#: apps/blog/models.py:87
 msgid "标签"
 msgstr "Tags"
 
-#: apps/blog/models.py:88
+#: apps/blog/models.py:89
 msgid "正文 Markdown"
 msgstr "Content Markdown"
 
-#: apps/blog/models.py:89
+#: apps/blog/models.py:90
 msgid "正文 HTML"
 msgstr "Content HTML"
 
-#: apps/blog/models.py:92
+#: apps/blog/models.py:93
 msgid "封面图"
 msgstr "Cover Image"
 
-#: apps/blog/models.py:96
+#: apps/blog/models.py:97
 msgid "状态"
 msgstr "Status"
 
-#: apps/blog/models.py:98
+#: apps/blog/models.py:99
 msgid "发布时间"
 msgstr "Publish Time"
 
-#: apps/blog/models.py:100
+#: apps/blog/models.py:101
 msgid "置顶/推荐"
 msgstr "Pinned/Featured"
 
-#: apps/blog/models.py:101
+#: apps/blog/models.py:102
 msgid "浏览量"
 msgstr "Views"
 
-#: apps/blog/models.py:102
+#: apps/blog/models.py:103
 msgid "阅读时长(分钟)"
 msgstr "Reading Time (minutes)"
 
-#: apps/blog/models.py:103
+#: apps/blog/models.py:104
 msgid "允许评论"
 msgstr "Allow Comments"
 
-#: apps/blog/models.py:108 apps/blog/models.py:109 apps/blog/models.py:180
+#: apps/blog/models.py:109 apps/blog/models.py:110 apps/blog/models.py:181
 msgid "文章"
 msgstr "Article"
 
-#: apps/blog/models.py:187
-msgid "用户"
-msgstr "User"
-
-#: apps/blog/models.py:195
+#: apps/blog/models.py:196
 msgid "父评论"
 msgstr "Parent Comment"
 
-#: apps/blog/models.py:198
-msgid "昵称"
-msgstr "Nickname"
-
-#: apps/blog/models.py:199
+#: apps/blog/models.py:200 templates/account/login.html:12
+#: templates/account/password_reset.html:13 templates/account/signup.html:12
 msgid "邮箱"
 msgstr "Email"
 
-#: apps/blog/models.py:201
+#: apps/blog/models.py:202
 msgid "内容"
 msgstr "Content"
 
-#: apps/blog/models.py:202
+#: apps/blog/models.py:203
 msgid "已审核"
 msgstr "Approved"
 
-#: apps/blog/models.py:203
+#: apps/blog/models.py:204
 msgid "IP"
 msgstr "IP"
 
-#: apps/blog/models.py:204
+#: apps/blog/models.py:205
 msgid "UA"
 msgstr "User Agent"
 
-#: apps/blog/models.py:207 apps/blog/models.py:208
+#: apps/blog/models.py:208 apps/blog/models.py:209
 msgid "评论"
 msgstr "Comment"
 
@@ -160,7 +269,7 @@ msgstr "Comment submission failed, please check your form information."
 
 #: apps/common/apps.py:10
 msgid "通用模块"
-msgstr "common module"
+msgstr "Common Module"
 
 #: apps/common/models.py:28
 msgid "创建时间"
@@ -193,3 +302,152 @@ msgstr "SEO Description"
 #: apps/common/models.py:84
 msgid "Slug"
 msgstr "Slug"
+
+#: templates/account/login.html:4 templates/account/login.html:7
+#: templates/account/login.html:21
+msgid "登录"
+msgstr "Log In"
+
+#: templates/account/login.html:24
+msgid "忘记密码？"
+msgstr "Forgot Password?"
+
+#: templates/account/login.html:26
+msgid "注册新账号"
+msgstr "Register New Account"
+
+#: templates/account/password_change.html:4
+#: templates/account/password_change.html:7 templates/account/profile.html:39
+msgid "修改密码"
+msgstr "Change Password"
+
+#: templates/account/password_change.html:12
+msgid "当前密码"
+msgstr "Current Password"
+
+#: templates/account/password_change.html:17
+#: templates/account/password_reset_confirm.html:13
+msgid "新密码"
+msgstr "New Password"
+
+#: templates/account/password_change.html:22
+#: templates/account/password_reset_confirm.html:18
+msgid "确认新密码"
+msgstr "Confirm New Password"
+
+#: templates/account/password_change.html:26
+#: templates/account/password_reset_confirm.html:22
+msgid "提交"
+msgstr "Submit"
+
+#: templates/account/password_change_done.html:4
+#: templates/account/password_change_done.html:7
+msgid "密码已修改"
+msgstr "Password Changed"
+
+#: templates/account/password_change_done.html:8
+msgid "你的密码已成功修改。"
+msgstr "Your password was successfully changed."
+
+#: templates/account/password_change_done.html:9
+#: templates/account/password_reset_done.html:9
+msgid "返回首页"
+msgstr "Return to Home"
+
+#: templates/account/password_reset.html:4
+#: templates/account/password_reset.html:7
+msgid "重置密码"
+msgstr "Reset Password"
+
+#: templates/account/password_reset.html:8
+msgid "请输入你的注册邮箱，我们将发送一封包含重置链接的邮件。"
+msgstr ""
+"Please enter your registered email address. We will send you an email with a "
+"reset link."
+
+#: templates/account/password_reset.html:17
+msgid "发送邮件"
+msgstr "Send Email"
+
+#: templates/account/password_reset_complete.html:4
+#: templates/account/password_reset_complete.html:7
+msgid "密码已重置"
+msgstr "Password Reset"
+
+#: templates/account/password_reset_complete.html:8
+msgid "你的密码已成功重置，现在可以使用新密码登录。"
+msgstr ""
+"Your password has been successfully reset. You can now log in with your new "
+"password."
+
+#: templates/account/password_reset_complete.html:9
+#: templates/account/signup.html:39
+msgid "去登录"
+msgstr "Log In"
+
+#: templates/account/password_reset_confirm.html:4
+#: templates/account/password_reset_confirm.html:7
+msgid "设置新密码"
+msgstr "Set New Password"
+
+#: templates/account/password_reset_confirm.html:25
+msgid "重置链接无效或已过期。"
+msgstr "The password reset link is invalid or has expired."
+
+#: templates/account/password_reset_confirm.html:26
+msgid "重新请求重置密码"
+msgstr "Request Password Reset Again"
+
+#: templates/account/password_reset_done.html:4
+#: templates/account/password_reset_done.html:7
+msgid "邮件已发送"
+msgstr "Email Sent"
+
+#: templates/account/password_reset_done.html:8
+msgid ""
+"如果该邮箱存在，我们已向你发送一封包含重置链接的邮件。请检查收件箱（以及垃圾"
+"邮件）。"
+msgstr ""
+"If an account exists with that email address, we've sent you an email with a "
+"reset link. Please check your inbox (and spam folder)."
+
+#: templates/account/password_reset_email.txt:1
+msgid "您收到此邮件是因为我们收到了您账户的密码重置请求。"
+msgstr ""
+"You're receiving this email because we received a password reset request for "
+"your account."
+
+#: templates/account/password_reset_email.txt:3
+msgid "请点击以下链接以设置新密码："
+msgstr "Please click the following link to set a new password:"
+
+#: templates/account/password_reset_email.txt:6
+msgid "如果不是您本人操作，请忽略此邮件；链接将在一段时间后失效。"
+msgstr ""
+"If you didn't request this, please ignore this email; the link will expire "
+"after some time."
+
+#: templates/account/password_reset_email.txt:8
+msgid "谢谢！"
+msgstr "Thank you!"
+
+#: templates/account/password_reset_subject.txt:1
+msgid "重置你的 EchoNote 密码"
+msgstr "Reset Your EchoNote Password"
+
+#: templates/account/profile.html:32
+msgid "个人网站"
+msgstr "Personal Website"
+
+#: templates/account/profile.html:36
+msgid "保存"
+msgstr "Save"
+
+#: templates/account/signup.html:4 templates/account/signup.html:7
+#: templates/account/signup.html:36
+msgid "注册"
+msgstr "Sign Up"
+
+#: templates/account/signup.html:39
+msgid "已有账号？"
+msgstr "Already have an account?"

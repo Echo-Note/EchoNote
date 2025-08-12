@@ -1,42 +1,199 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
+  {% load static %}
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}EchoNote{% endblock %}</title>
-  {% load static %}
+  <meta name="description" content="EchoNote - 现代技术博客，分享编程知识和技术见解" />
+  <meta name="keywords" content="技术博客, 编程, Python, Django, 前端开发, 技术分享" />
+  <meta name="author" content="EchoNote" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+  <meta property="og:title" content="{% block og_title %}EchoNote - 现代技术博客{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}分享编程知识、技术见解和开发经验的现代技术博客{% endblock %}" />
+  <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.jpg' %}{% endblock %}" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+  <meta property="twitter:title" content="{% block twitter_title %}EchoNote - 现代技术博客{% endblock %}" />
+  <meta property="twitter:description" content="{% block twitter_description %}分享编程知识、技术见解和开发经验的现代技术博客{% endblock %}" />
+  <meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.jpg' %}{% endblock %}" />
+
+  <title>{% block title %}EchoNote - 现代技术博客{% endblock %}</title>
   {% block meta %}{% endblock %}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
-  <style>
-    .container { max-width: 960px; margin: 0 auto; }
-    .post-meta { color: #666; font-size: 0.9em; }
-    .tag { display: inline-block; padding: 2px 8px; margin-right: 6px; background: #f4f4f4; border-radius: 999px; font-size: 0.85em; }
-    .comment { padding: 0.75rem 1rem; background: #fafafa; border-radius: 8px; margin-bottom: 0.75rem; }
-  </style>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+
+  <!-- RSS Feed -->
+  <link rel="alternate" type="application/rss+xml" title="EchoNote RSS Feed" href="{% url 'rss_feed' %}">
 </head>
 <body>
-  <header class="container">
-    <nav>
-      <ul>
-        <li><strong><a href="/">EchoNote</a></strong></li>
-      </ul>
-      <ul>
-        <li>
-          <form role="search" action="{% url 'blog:search' %}" method="get">
-            <input type="search" name="q" placeholder="搜索文章…" value="{{ q|default:'' }}" />
-          </form>
-        </li>
-        <li><a href="/admin/" target="_blank">管理后台</a></li>
-      </ul>
-    </nav>
+  <!-- Skip to main content for accessibility -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-50">跳转到主要内容</a>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav role="navigation" aria-label="主导航">
+        <ul>
+          <li>
+            <a href="/" class="brand" aria-label="EchoNote 首页">
+              <i class="fas fa-blog"></i>
+              <strong>EchoNote</strong>
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <form role="search" action="{% url 'blog:search' %}" method="get" class="search-form">
+              <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                  type="search"
+                  name="q"
+                  placeholder="搜索文章..."
+                  value="{{ q|default:'' }}"
+                  aria-label="搜索博客文章"
+                  autocomplete="off"
+                >
+              </div>
+            </form>
+          </li>
+          <li><a href="{% url 'blog:post_list' %}">文章</a></li>
+          <li><a href="{% url 'blog:category' 'all' %}">分类</a></li>
+          <li><a href="{% url 'blog:tag' 'all' %}">标签</a></li>
+          <li><a href="{% url 'blog:archive_year' 2024 %}">归档</a></li>
+          <li><a href="/admin/" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-cog"></i>
+            管理
+          </a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
-  <main class="container">
-    {% block content %}{% endblock %}
+
+  <!-- Main Content -->
+  <main id="main-content">
+    <div class="container">
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+              <i class="fas fa-info-circle"></i>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
   </main>
-  <footer class="container">
-    <hr />
-    <small>© {{ now|date:'Y' }} EchoNote</small>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>EchoNote</h3>
+          <p>分享编程知识、技术见解和开发经验的现代技术博客。</p>
+          <div class="social-links">
+            <a href="/rss/" aria-label="RSS订阅" title="RSS订阅">
+              <i class="fas fa-rss"></i>
+            </a>
+            <a href="mailto:hello@echonote.com" aria-label="联系我们" title="联系我们">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4>快速链接</h4>
+          <ul>
+            <li><a href="{% url 'blog:post_list' %}">最新文章</a></li>
+            <li><a href="{% url 'blog:post_list' %}">文章分类</a></li>
+            <li><a href="{% url 'blog:post_list' %}">热门标签</a></li>
+            <li><a href="{% url 'blog:post_list' %}">文章归档</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>关于</h4>
+          <ul>
+            <li><a href="/about/">关于我们</a></li>
+            <li><a href="/contact/">联系我们</a></li>
+            <li><a href="/privacy/">隐私政策</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <hr>
+      <div class="footer-bottom">
+        <small>&copy; {{ now|date:'Y' }} EchoNote. 保留所有权利。</small>
+        <small class="built-with">
+          基于 <a href="https://www.djangoproject.com/" target="_blank" rel="noopener">Django</a> 构建
+        </small>
+      </div>
+    </div>
   </footer>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="back-to-top" aria-label="回到顶部" title="回到顶部">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- JavaScript -->
+  <script>
+    // Back to top button
+    const backToTopButton = document.getElementById('back-to-top');
+
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTopButton.classList.add('visible');
+      } else {
+        backToTopButton.classList.remove('visible');
+      }
+    });
+
+    backToTopButton.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Auto-hide messages after 5 seconds
+    const messages = document.querySelectorAll('.alert');
+    if (messages.length > 0) {
+      setTimeout(() => {
+        messages.forEach(message => {
+          message.style.transition = 'opacity 0.5s ease';
+          message.style.opacity = '0';
+          setTimeout(() => message.remove(), 500);
+        });
+      }, 5000);
+    }
+  </script>
 </body>
 </html>

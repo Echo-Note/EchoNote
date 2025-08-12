@@ -1,61 +1,244 @@
 {% extends "base.html" %}
-{% block title %}文章列表 - EchoNote{% endblock %}
+{% load static %}
+
+{% block title %}
+  {% if category %}{{ category.name }} - {% endif %}
+  {% if tag %}{{ tag.name }} - {% endif %}
+  {% if archive_year %}{{ archive_year }}年归档 - {% endif %}
+  {% if q %}搜索: {{ q }} - {% endif %}
+  文章列表 - EchoNote
+{% endblock %}
+
+{% block og_title %}
+  {% if category %}{{ category.name }} - {% endif %}
+  {% if tag %}{{ tag.name }} - {% endif %}
+  {% if archive_year %}{{ archive_year }}年归档 - {% endif %}
+  {% if q %}搜索: {{ q }} - {% endif %}
+  文章列表 - EchoNote
+{% endblock %}
+{% block og_description %}{% if category %}{{ category.name }}分类下的所有文章{% elif tag %}{{ tag.name }}标签下的所有文章{% elif archive_year %}{{ archive_year }}年发布的所有文章{% elif q %}搜索"{{ q }}"的结果{% else %}EchoNote博客的最新文章列表{% endif %}{% endblock %}
+
 {% block content %}
-  <h1>文章列表</h1>
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1>
+        {% if category %}
+          <i class="fas fa-folder"></i>
+          {{ category.name }}
+        {% elif tag %}
+          <i class="fas fa-tag"></i>
+          {{ tag.name }}
+        {% elif archive_year %}
+          <i class="fas fa-calendar-alt"></i>
+          {{ archive_year }}年归档
+        {% elif q %}
+          <i class="fas fa-search"></i>
+          搜索结果
+        {% else %}
+          <i class="fas fa-blog"></i>
+          最新文章
+        {% endif %}
+      </h1>
 
-  {% if category %}
-    <p>分类：<strong>{{ category.name }}</strong></p>
-  {% endif %}
-  {% if tag %}
-    <p>标签：<strong>{{ tag.name }}</strong></p>
-  {% endif %}
-  {% if archive_year %}
-    <p>归档年份：<strong>{{ archive_year }}</strong></p>
-  {% endif %}
-  {% if q %}
-    <p>搜索关键词：<strong>{{ q }}</strong></p>
-  {% endif %}
-
-  {% for post in posts %}
-    <article>
-      <header>
-        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
-        <p class="post-meta">
-          {{ post.published_at|date:"Y-m-d H:i" }} · {{ post.author }} · 阅读 {{ post.reading_time }} 分钟 · 浏览 {{ post.views }}
-        </p>
-      </header>
-      {% if post.category %}
-        <p>分类：<a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></p>
+      {% if category %}
+        <p class="page-description">{{ category.description|default:category.name }}分类下的所有文章</p>
+      {% elif tag %}
+        <p class="page-description">包含"{{ tag.name }}"标签的所有文章</p>
+      {% elif archive_year %}
+        <p class="page-description">{{ archive_year }}年发布的所有文章</p>
+      {% elif q %}
+        <p class="page-description">搜索"<strong>{{ q }}</strong>"的结果，共找到 <strong>{{ posts.paginator.count|default:0 }}</strong> 篇文章</p>
+      {% else %}
+        <p class="page-description">分享编程知识、技术见解和开发经验</p>
       {% endif %}
-      {% if post.tags.all %}
+    </div>
+  </div>
+
+  <!-- Filter Info -->
+  {% if category or tag or archive_year or q %}
+    <div class="filter-info">
+      <div class="filter-breadcrumb">
+        <a href="{% url 'blog:post_list' %}">
+          <i class="fas fa-home"></i>
+          首页
+        </a>
+        <i class="fas fa-chevron-right"></i>
+        <span>
+          {% if category %}{{ category.name }}{% endif %}
+          {% if tag %}{{ tag.name }}{% endif %}
+          {% if archive_year %}{{ archive_year }}年{% endif %}
+          {% if q %}搜索: {{ q }}{% endif %}
+        </span>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Posts Grid -->
+  <div class="posts-grid">
+    {% for post in posts %}
+      <article class="post-card" itemscope itemtype="http://schema.org/BlogPosting">
+        {% if post.cover_image %}
+          <div class="post-card-image">
+            <a href="{{ post.get_absolute_url }}" aria-label="阅读 {{ post.title }}">
+              <img
+                src="{{ post.cover_image.url }}"
+                alt="{{ post.title }}"
+                loading="lazy"
+                itemprop="image"
+              >
+            </a>
+          </div>
+        {% endif %}
+
+        <div class="post-card-content">
+          <header class="post-card-header">
+            <h2 itemprop="headline">
+              <a href="{{ post.get_absolute_url }}" itemprop="url">
+                {{ post.title }}
+              </a>
+            </h2>
+
+            <div class="post-meta" itemprop="datePublished" content="{{ post.published_at|date:'Y-m-d\TH:i:sP' }}">
+              <span class="post-date">
+                <i class="far fa-calendar"></i>
+                {{ post.published_at|date:"Y-m-d" }}
+              </span>
+              <span class="post-author">
+                <i class="far fa-user"></i>
+                {{ post.author }}
+              </span>
+              <span class="post-reading-time">
+                <i class="far fa-clock"></i>
+                {{ post.reading_time }} 分钟
+              </span>
+              <span class="post-views">
+                <i class="far fa-eye"></i>
+                {{ post.views }}
+              </span>
+            </div>
+          </header>
+
+          <div class="post-card-excerpt" itemprop="description">
+            {% if post.excerpt %}
+              {{ post.excerpt|truncatewords:30 }}
+            {% else %}
+              {{ post.body_html|striptags|truncatewords:30 }}
+            {% endif %}
+          </div>
+
+          <div class="post-card-meta">
+            {% if post.category %}
+              <div class="post-category">
+                <a href="{% url 'blog:category' post.category.slug %}">
+                  <i class="fas fa-folder"></i>
+                  {{ post.category.name }}
+                </a>
+              </div>
+            {% endif %}
+
+            {% if post.tags.all %}
+              <div class="post-tags">
+                {% for t in post.tags.all %}
+                  <a class="tag" href="{% url 'blog:tag' t.slug %}">
+                    <i class="fas fa-tag"></i>
+                    {{ t.name }}
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="post-card-footer">
+            <a href="{{ post.get_absolute_url }}" class="read-more">
+              阅读全文
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3>暂无文章</h3>
         <p>
-          {% for t in post.tags.all %}
-            <a class="tag" href="{% url 'blog:tag' t.slug %}">#{{ t.name }}</a>
-          {% endfor %}
+          {% if category %}
+            {{ category.name }}分类下暂无文章。
+          {% elif tag %}
+            {{ tag.name }}标签下暂无文章。
+          {% elif archive_year %}
+            {{ archive_year }}年暂无发布的文章。
+          {% elif q %}
+            没有找到包含"{{ q }}"的文章。
+          {% else %}
+            博客中还没有文章，敬请期待！
+          {% endif %}
         </p>
-      {% endif %}
-      <p><a href="{{ post.get_absolute_url }}">阅读全文 →</a></p>
-      <hr />
-    </article>
-  {% empty %}
-    <p>暂无文章。</p>
-  {% endfor %}
+        {% if q %}
+          <a href="{% url 'blog:post_list' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i>
+            返回文章列表
+          </a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
 
-  {% if posts.paginator %}
-    <nav aria-label="分页">
+  <!-- Pagination -->
+  {% if posts.paginator and posts.paginator.num_pages > 1 %}
+    <nav aria-label="文章分页" class="pagination-nav">
       <ul class="pagination">
         {% if posts.has_previous %}
-          <li><a href="?page={{ posts.previous_page_number }}{{ querystring|default:'' }}">上一页</a></li>
+          <li>
+            <a href="?page={{ posts.previous_page_number }}{{ querystring|default:'' }}" aria-label="上一页">
+              <i class="fas fa-chevron-left"></i>
+              上一页
+            </a>
+          </li>
         {% else %}
-          <li class="disabled"><span>上一页</span></li>
+          <li class="disabled">
+            <span aria-disabled="true">
+              <i class="fas fa-chevron-left"></i>
+              上一页
+            </span>
+          </li>
         {% endif %}
-        <li><span>第 {{ posts.number }} / {{ posts.paginator.num_pages }} 页</span></li>
+
+        <li class="page-info">
+          <span>第 {{ posts.number }} / {{ posts.paginator.num_pages }} 页</span>
+        </li>
+
         {% if posts.has_next %}
-          <li><a href="?page={{ posts.next_page_number }}{{ querystring|default:'' }}">下一页</a></li>
+          <li>
+            <a href="?page={{ posts.next_page_number }}{{ querystring|default:'' }}" aria-label="下一页">
+              下一页
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          </li>
         {% else %}
-          <li class="disabled"><span>下一页</span></li>
+          <li class="disabled">
+            <span aria-disabled="true">
+              下一页
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </li>
         {% endif %}
       </ul>
     </nav>
+  {% endif %}
+
+  <!-- SEO Structured Data -->
+  {% if category %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "{{ category.name }}",
+      "description": "{{ category.description|default:category.name }}分类下的所有文章",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+    }
+    </script>
   {% endif %}
 {% endblock %}

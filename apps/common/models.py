@@ -25,9 +25,21 @@ class TimeStampedModel(models.Model):
     注意：Django 会在保存记录时自动维护该字段的时间。
     """
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("创建时间"))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("更新时间"))
-    version = models.PositiveSmallIntegerField(default=1, verbose_name=_("版本"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("创建时间"),
+        db_comment="创建时间",
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("更新时间"),
+        db_comment="更新时间",
+    )
+    version = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_("版本"),
+        db_comment="版本号（随保存自增）",
+    )
 
     class Meta:
         abstract = True
@@ -47,8 +59,17 @@ class TimeStampedModel(models.Model):
 class SoftDeleteModel(models.Model):
     """抽象软删除模型：通过布尔标记与删除时间实现逻辑删除。"""
 
-    is_deleted = models.BooleanField(default=False, verbose_name=_("已删除"))
-    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("删除时间"))
+    is_deleted = models.BooleanField(
+        default=False,
+        verbose_name=_("已删除"),
+        db_comment="是否已被软删除",
+    )
+    deleted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("删除时间"),
+        db_comment="软删除时间",
+    )
 
     class Meta:
         abstract = True
@@ -68,8 +89,18 @@ class SoftDeleteModel(models.Model):
 class SEOMixin(models.Model):
     """SEO 元信息混入：为页面/文章等提供标题与描述。"""
 
-    meta_title = models.CharField(max_length=255, blank=True, verbose_name=_("SEO 标题"))
-    meta_description = models.CharField(max_length=500, blank=True, verbose_name=_("SEO 描述"))
+    meta_title = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("SEO 标题"),
+        db_comment="SEO 标题",
+    )
+    meta_description = models.CharField(
+        max_length=500,
+        blank=True,
+        verbose_name=_("SEO 描述"),
+        db_comment="SEO 描述",
+    )
 
     class Meta:
         abstract = True
@@ -81,7 +112,12 @@ class SluggedModel(models.Model):
     子类可通过覆写 get_slug_source 指定 slug 的来源（默认取 title 字段）。
     """
 
-    slug = models.SlugField(max_length=255, unique=True, verbose_name=_("Slug"))
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        verbose_name=_("Slug"),
+        db_comment="唯一标识 Slug",
+    )
 
     class Meta:
         abstract = True

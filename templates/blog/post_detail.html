@@ -1,113 +1,457 @@
 {% extends "base.html" %}
-{% block title %}{{ post.title }} - EchoNote{% endblock %}
+{% load static %}
+
+{% block title %}{{ post.meta_title|default:post.title }} - EchoNote{% endblock %}
+
 {% block meta %}
+  <!-- Canonical URL -->
   <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}" />
-  <meta name="description" content="{{ post.meta_description|default:post.title }}" />
-  {% if post.meta_title %}
-    <meta property="og:title" content="{{ post.meta_title }}" />
-  {% else %}
-    <meta property="og:title" content="{{ post.title }}" />
-  {% endif %}
-  <meta property="og:description" content="{{ post.meta_description|default:post.title }}" />
+
+  <!-- Meta Description -->
+  <meta name="description" content="{{ post.meta_description|default:post.excerpt|default:post.title }}" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}" />
+  <meta property="og:title" content="{{ post.meta_title|default:post.title }}" />
+  <meta property="og:description" content="{{ post.meta_description|default:post.excerpt|default:post.title }}" />
   {% if post.cover_image %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}" />
   {% endif %}
+  <meta property="og:site_name" content="EchoNote" />
+  <meta property="og:locale" content="zh_CN" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}" />
+  <meta name="twitter:title" content="{{ post.meta_title|default:post.title }}" />
+  <meta name="twitter:description" content="{{ post.meta_description|default:post.excerpt|default:post.title }}" />
+  {% if post.cover_image %}
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}" />
+  {% endif %}
+  <meta name="twitter:site" content="@echonote" />
+
+  <!-- Article Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}"
+    },
     "headline": "{{ post.meta_title|default:post.title|escapejs }}",
+    "description": "{{ post.meta_description|default:post.excerpt|default:post.title|escapejs }}",
+    "image": {
+      "@type": "ImageObject",
+      {% if post.cover_image %}
+      "url": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}",
+      {% else %}
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-default.jpg' %}",
+      {% endif %}
+      "width": 1200,
+      "height": 630
+    },
     "datePublished": "{{ post.published_at|date:'c' }}",
     "dateModified": "{{ post.updated_at|date:'c' }}",
     "author": {
       "@type": "Person",
-      "name": "{{ post.author.get_username|escapejs }}"
+      "name": "{{ post.author.get_full_name|default:post.author.get_username|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/author/{{ post.author.username }}/"
     },
-    {% if post.cover_image %}
-    "image": ["{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}"],
-    {% endif %}
-    "url": "{{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}",
-    "description": "{{ post.meta_description|default:post.title|escapejs }}"
+    "publisher": {
+      "@type": "Organization",
+      "name": "EchoNote",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}",
+        "width": 600,
+        "height": 60
+      }
+    }
   }
   </script>
 {% endblock %}
+
 {% block content %}
-  <article>
-    <header>
-      <h1>{{ post.title }}</h1>
-      <p class="post-meta">
-        {{ post.published_at|date:"Y-m-d H:i" }} · {{ post.author }} · 阅读 {{ post.reading_time }} 分钟 · 浏览 {{ post.views }}
-      </p>
-      {% if post.category %}
-        <p>分类：<a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></p>
-      {% endif %}
-      {% if post.tags.all %}
-        <p>
+  <!-- Article Header -->
+  <header class="article-header">
+    <nav class="breadcrumb" aria-label="面包屑导航">
+      <ol>
+        <li><a href="{% url 'blog:post_list' %}"><i class="fas fa-home"></i> 首页</a></li>
+        {% if post.category %}
+          <li><a href="{% url 'blog:category' post.category.slug %}"><i class="fas fa-folder"></i> {{ post.category.name }}</a></li>
+        {% endif %}
+        <li class="active" aria-current="page">{{ post.title|truncatewords:5 }}</li>
+      </ol>
+    </nav>
+
+    <h1 class="article-title" itemprop="headline">{{ post.title }}</h1>
+
+    <div class="article-meta">
+      <div class="meta-item">
+        <i class="fas fa-calendar-alt"></i>
+        <time datetime="{{ post.published_at|date:'Y-m-d\TH:i:sP' }}" itemprop="datePublished">
+          {{ post.published_at|date:"Y年m月d日" }}
+        </time>
+      </div>
+
+      <div class="meta-item">
+        <i class="fas fa-user"></i>
+        <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <span itemprop="name">{{ post.author }}</span>
+        </span>
+      </div>
+
+      <div class="meta-item">
+        <i class="fas fa-clock"></i>
+        <span>{{ post.reading_time }} 分钟阅读</span>
+      </div>
+
+      <div class="meta-item">
+        <i class="fas fa-eye"></i>
+        <span>{{ post.views }} 次浏览</span>
+      </div>
+    </div>
+
+    {% if post.category or post.tags.all %}
+      <div class="article-tags">
+        {% if post.category %}
+          <a href="{% url 'blog:category' post.category.slug %}" class="category-badge">
+            <i class="fas fa-folder"></i>
+            {{ post.category.name }}
+          </a>
+        {% endif %}
+
+        {% if post.tags.all %}
           {% for t in post.tags.all %}
-            <a class="tag" href="{% url 'blog:tag' t.slug %}">#{{ t.name }}</a>
+            <a href="{% url 'blog:tag' t.slug %}" class="tag">
+              <i class="fas fa-tag"></i>
+              {{ t.name }}
+            </a>
           {% endfor %}
-        </p>
-      {% endif %}
-    </header>
-    {% if post.cover_image %}
-      <figure><img src="{{ post.cover_image.url }}" alt="{{ post.title }}" style="max-width:100%;height:auto;"/></figure>
+        {% endif %}
+      </div>
     {% endif %}
-    <section>
-      <div class="content">{{ post.body_html|safe }}</div>
-    </section>
+  </header>
+
+  <!-- Article Content -->
+  <article class="article-content" itemprop="articleBody">
+    {% if post.cover_image %}
+      <figure class="article-cover">
+        <img
+          src="{{ post.cover_image.url }}"
+          alt="{{ post.title }}"
+          itemprop="image"
+          loading="lazy"
+        >
+        {% if post.cover_image_caption %}
+          <figcaption>{{ post.cover_image_caption }}</figcaption>
+        {% endif %}
+      </figure>
+    {% endif %}
+
+    <div class="content">
+      {{ post.body_html|safe }}
+    </div>
   </article>
 
-  <section>
-    <h3>评论</h3>
-    {% for c in comments %}
-      <div class="comment">
-        <strong>{{ c.user|default:c.nickname|default:"匿名" }}</strong>
-        <small> · {{ c.created_at|date:"Y-m-d H:i" }}</small>
-        <p>{{ c.content|linebreaks }}</p>
-        <p><a href="{{ post.get_absolute_url }}?reply_to={{ c.id }}#comment-form">回复</a></p>
-        {% for r in c.replies.all %}
-          {% if r.is_approved %}
-            <div class="comment" style="margin-left: 1rem;">
-              <strong>{{ r.user|default:r.nickname|default:"匿名" }}</strong>
-              <small> · {{ r.created_at|date:"Y-m-d H:i" }}</small>
-              <p>{{ r.content|linebreaks }}</p>
-              <p><a href="{{ post.get_absolute_url }}?reply_to={{ c.id }}#comment-form">回复</a></p>
+  <!-- Article Footer -->
+  <footer class="article-footer">
+    <div class="article-actions">
+      <div class="share-buttons">
+        <h4>分享这篇文章</h4>
+        <div class="share-links">
+          <a href="https://twitter.com/intent/tweet?url={{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}&text={{ post.title }}"
+             target="_blank" rel="noopener noreferrer"
+             class="share-button twitter"
+             aria-label="分享到Twitter">
+            <i class="fab fa-twitter"></i>
+            Twitter
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}"
+             target="_blank" rel="noopener noreferrer"
+             class="share-button facebook"
+             aria-label="分享到Facebook">
+            <i class="fab fa-facebook-f"></i>
+            Facebook
+          </a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}"
+             target="_blank" rel="noopener noreferrer"
+             class="share-button linkedin"
+             aria-label="分享到LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+            LinkedIn
+          </a>
+          <a href="mailto:?subject={{ post.title }}&body={{ request.scheme }}://{{ request.get_host }}{{ post.get_absolute_url }}"
+             class="share-button email"
+             aria-label="通过邮件分享">
+            <i class="fas fa-envelope"></i>
+            Email
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {% if post.tags.all %}
+      <div class="related-tags">
+        <h4>相关标签</h4>
+        <div class="tag-cloud">
+          {% for t in post.tags.all %}
+            <a href="{% url 'blog:tag' t.slug %}" class="tag">
+              {{ t.name }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </footer>
+
+  <!-- Navigation -->
+  <nav class="article-navigation">
+    {% if post.get_previous_post %}
+      <a href="{{ post.get_previous_post.get_absolute_url }}" class="nav-link prev">
+        <div class="nav-arrow">←</div>
+        <div class="nav-content">
+          <div class="nav-label">上一篇</div>
+          <div class="nav-title">{{ post.get_previous_post.title|truncatewords:5 }}</div>
+        </div>
+      </a>
+    {% endif %}
+
+    {% if post.get_next_post %}
+      <a href="{{ post.get_next_post.get_absolute_url }}" class="nav-link next">
+        <div class="nav-content">
+          <div class="nav-label">下一篇</div>
+          <div class="nav-title">{{ post.get_next_post.title|truncatewords:5 }}</div>
+        </div>
+        <div class="nav-arrow">→</div>
+      </a>
+    {% endif %}
+  </nav>
+
+  <!-- Comments Section -->
+  <section class="comments-section" id="comments">
+    <header class="comments-header">
+      <h2>
+        <i class="fas fa-comments"></i>
+        评论 ({{ comments.count }})
+      </h2>
+
+      <div class="comments-info">
+        {% if post.allow_comment %}
+          <a href="#comment-form" class="btn btn-primary">
+            <i class="fas fa-pen"></i>
+            发表评论
+          </a>
+        {% else %}
+          <span class="comments-closed">
+            <i class="fas fa-lock"></i>
+            评论已关闭
+          </span>
+        {% endif %}
+      </div>
+    </header>
+
+    {% if comments %}
+      <div class="comments-list">
+        {% for comment in comments %}
+          <article class="comment" id="comment-{{ comment.id }}" itemscope itemtype="http://schema.org/Comment">
+            <header class="comment-header">
+              <div class="comment-author">
+                {% if comment.user %}
+                  <strong itemprop="author">{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                {% else %}
+                  <strong itemprop="author">{{ comment.nickname|default:"匿名用户" }}</strong>
+                {% endif %}
+              </div>
+
+              <div class="comment-meta">
+                <time datetime="{{ comment.created_at|date:'c' }}" itemprop="datePublished">
+                  {{ comment.created_at|date:"Y年m月d日 H:i" }}
+                </time>
+
+                {% if comment.is_approved %}
+                  <span class="comment-status approved">
+                    <i class="fas fa-check-circle"></i>
+                    已审核
+                  </span>
+                {% else %}
+                  <span class="comment-status pending">
+                    <i class="fas fa-clock"></i>
+                    待审核
+                  </span>
+                {% endif %}
+              </div>
+            </header>
+
+            <div class="comment-content" itemprop="text">
+              {{ comment.content|linebreaks }}
             </div>
-          {% endif %}
+
+            <footer class="comment-footer">
+              <div class="comment-actions">
+                <a href="{{ post.get_absolute_url }}?reply_to={{ comment.id }}#comment-form" class="reply-link">
+                  <i class="fas fa-reply"></i>
+                  回复
+                </a>
+
+                {% if comment.user == request.user or request.user.is_staff %}
+                  <a href="{% url 'blog:edit_comment' post.slug comment.id %}" class="edit-link">
+                    <i class="fas fa-edit"></i>
+                    编辑
+                  </a>
+                {% endif %}
+              </div>
+            </footer>
+
+            <!-- Replies -->
+            {% if comment.replies.all %}
+              <div class="comment-replies">
+                {% for reply in comment.replies.all %}
+                  {% if reply.is_approved %}
+                    <article class="comment reply" id="comment-{{ reply.id }}" itemscope itemtype="http://schema.org/Comment">
+                      <header class="comment-header">
+                        <div class="comment-author">
+                          {% if reply.user %}
+                            <strong itemprop="author">{{ reply.user.get_full_name|default:reply.user.username }}</strong>
+                          {% else %}
+                            <strong itemprop="author">{{ reply.nickname|default:"匿名用户" }}</strong>
+                          {% endif %}
+                        </div>
+
+                        <div class="comment-meta">
+                          <time datetime="{{ reply.created_at|date:'c' }}" itemprop="datePublished">
+                            {{ reply.created_at|date:"Y年m月d日 H:i" }}
+                          </time>
+                        </div>
+                      </header>
+
+                      <div class="comment-content" itemprop="text">
+                        {{ reply.content|linebreaks }}
+                      </div>
+                    </article>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </article>
         {% endfor %}
       </div>
-    {% empty %}
-      <p>暂无评论。</p>
-    {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-comment-slash"></i>
+        </div>
+        <h3>暂无评论</h3>
+        <p>成为第一个评论这篇文章的人！</p>
+      </div>
+    {% endif %}
+
+    {% if post.allow_comment %}
+      <section class="comment-form-section" id="comment-form">
+        <h3>
+          {% if reply_to %}
+            <i class="fas fa-reply"></i>
+            回复 {{ reply_to.user|default:reply_to.nickname|default:"匿名用户" }}
+          {% else %}
+            <i class="fas fa-pen"></i>
+            发表评论
+          {% endif %}
+        </h3>
+
+        {% if reply_to %}
+          <div class="reply-info">
+            <p>正在回复 <strong>{{ reply_to.user|default:reply_to.nickname|default:"匿名用户" }}</strong> 的评论</p>
+            <a href="{{ post.get_absolute_url }}#comment-form" class="cancel-reply">
+              <i class="fas fa-times"></i>
+              取消回复
+            </a>
+          </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'blog:submit_comment' post.slug %}" class="comment-form">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+          {% if reply_to %}
+            <input type="hidden" name="parent_id" value="{{ reply_to.id }}">
+          {% endif %}
+
+          {% if not request.user.is_authenticated %}
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="{{ form.nickname.id_for_label }}">
+                  昵称 <span class="required">*</span>
+                </label>
+                {{ form.nickname }}
+                {{ form.nickname.errors }}
+              </div>
+
+              <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">
+                  邮箱 <span class="required">*</span>
+                </label>
+                {{ form.email }}
+                {{ form.email.errors }}
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="form-group">
+            <label for="{{ form.content.id_for_label }}">
+              评论内容 <span class="required">*</span>
+            </label>
+            {{ form.content }}
+            {{ form.content.errors }}
+            <div class="form-help">
+              支持Markdown格式，评论将在审核后显示
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+            提交评论
+          </button>
+        </form>
+      </section>
+    {% endif %}
   </section>
 
-  {% if post.allow_comment %}
-  <section>
-    <h3>发表你的看法</h3>
-    <form id="comment-form" method="post" action="{% url 'blog:submit_comment' post.slug %}">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
-      {% if reply_to %}
-        <input type="hidden" name="parent_id" value="{{ reply_to.id }}" />
-        <p>正在回复：<strong>{{ reply_to.user|default:reply_to.nickname|default:"匿名" }}</strong> <a href="{{ post.get_absolute_url }}#comment-form">取消</a></p>
-      {% endif %}
-      <div class="grid">
-        <div>
-          <label>昵称{% if not request.user.is_authenticated %}*{% endif %}
-            {{ form.nickname }}
-          </label>
-        </div>
-        <div>
-          <label>邮箱{% if not request.user.is_authenticated %}*{% endif %}
-            {{ form.email }}
-          </label>
-        </div>
+  <!-- Related Articles -->
+  {% if related_posts %}
+    <section class="related-articles">
+      <h2>
+        <i class="fas fa-book-open"></i>
+        相关文章
+      </h2>
+
+      <div class="related-posts-grid">
+        {% for related in related_posts %}
+          <article class="related-post">
+            {% if related.cover_image %}
+              <div class="related-post-image">
+                <a href="{{ related.get_absolute_url }}">
+                  <img
+                    src="{{ related.cover_image.url }}"
+                    alt="{{ related.title }}"
+                    loading="lazy"
+                  >
+                </a>
+              </div>
+            {% endif %}
+
+            <div class="related-post-content">
+              <h3>
+                <a href="{{ related.get_absolute_url }}">{{ related.title }}</a>
+              </h3>
+              <div class="related-post-meta">
+                <time>{{ related.published_at|date:"Y-m-d" }}</time>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
       </div>
-      <label>内容*
-        {{ form.content }}
-      </label>
-      <button type="submit">提交评论</button>
-    </form>
-  </section>
+    </section>
   {% endif %}
 {% endblock %}

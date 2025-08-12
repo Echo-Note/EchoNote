@@ -28,6 +28,8 @@ sitemaps = {
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # 账号系统
+    path("account/", include("apps.account.urls", namespace="account")),
     # 博客应用主路由：将根路径指向博客列表页
     path("", include("apps.blog.urls", namespace="blog")),
     # 站点地图与 robots.txt
@@ -38,5 +40,11 @@ urlpatterns = [
         "robots.txt",
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
         name="robots_txt",
+    ),
+    # 简易 RSS 占位，后续可接入 Django syndication framework
+    path(
+        "rss/",
+        TemplateView.as_view(template_name="rss.xml", content_type="application/rss+xml"),
+        name="rss_feed",
     ),
 ]

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "个人资料" %} - EchoNote{% endblock %}
+
+{% block content %}
+<h1>{% trans "个人资料" %}</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-field">
+    <label for="id_nickname">{% trans "昵称" %}</label>
+    {{ form.nickname }}
+    {{ form.nickname.errors }}
+  </div>
+  <div class="form-field">
+    <label for="id_avatar">{% trans "头像" %}</label>
+    {{ form.avatar }}
+    {{ form.avatar.errors }}
+    {% if request.user.profile.avatar %}
+      <div class="mt-2">
+        <img src="{{ request.user.profile.avatar.url }}" alt="avatar" style="max-width:120px;border-radius:8px;" />
+      </div>
+    {% endif %}
+  </div>
+  <div class="form-field">
+    <label for="id_bio">{% trans "简介" %}</label>
+    {{ form.bio }}
+    {{ form.bio.errors }}
+  </div>
+  <div class="form-field">
+    <label for="id_website">{% trans "个人网站" %}</label>
+    {{ form.website }}
+    {{ form.website.errors }}
+  </div>
+  <button type="submit" class="btn btn-primary">{% trans "保存" %}</button>
+</form>
+<p class="mt-3">
+  <a href="{% url 'account:password_change' %}">{% trans "修改密码" %}</a>
+</p>
+{% endblock %}

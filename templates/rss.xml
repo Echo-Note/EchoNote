@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>EchoNote RSS</title>
+    <link>/</link>
+    <description>EchoNote 博客 RSS 占位符。稍后将输出最新文章。</description>
+    <language>zh-cn</language>
+  </channel>
+</rss>
