@@ -53,6 +53,7 @@ dev = [
     "django-stubs>=5.0.0",
     "model-bakery>=1.19.5",
     "factory_boy>=3.3.0",
+    "pre-commit>=4.3.0",
 ]
 
 [project.urls]
