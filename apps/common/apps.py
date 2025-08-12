@@ -7,4 +7,4 @@ class CommonConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.common"
-    verbose_name = _("Common")
+    verbose_name = _("通用模块")
