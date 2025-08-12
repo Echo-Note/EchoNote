@@ -79,6 +79,8 @@ class Post(TimeStampedModel, SEOMixin, SluggedModel):
     """文章模型，包含 Markdown 正文与派生 HTML、标签、分类、发布状态等。"""
 
     class Status(models.TextChoices):
+        """文章发布状态。"""
+
         DRAFT = "draft", _("草稿")
         SCHEDULED = "scheduled", _("计划发布")
         PUBLISHED = "published", _("已发布")
