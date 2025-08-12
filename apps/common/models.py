@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -24,38 +25,51 @@ class TimeStampedModel(models.Model):
     注意：Django 会在保存记录时自动维护该字段的时间。
     """
 
-    created_at: models.DateTimeField = models.DateTimeField(
-        auto_now_add=True, verbose_name=_("创建时间")
-    )
-    updated_at: models.DateTimeField = models.DateTimeField(
-        auto_now=True, verbose_name=_("更新时间")
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("创建时间"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("更新时间"))
+    version = models.PositiveSmallIntegerField(default=1, verbose_name=_("版本"))
 
     class Meta:
         abstract = True
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """
+        保存记录时自动增加版本号。
+
+        :param args: 位置参数
+        :param kwargs: 关键字参数
+        :return: None
+        """
+        self.version += 1
+        super().save(*args, **kwargs)
 
 
 class SoftDeleteModel(models.Model):
     """抽象软删除模型：通过布尔标记与删除时间实现逻辑删除。"""
 
-    is_deleted: models.BooleanField = models.BooleanField(default=False, verbose_name=_("已删除"))
-    deleted_at: models.DateTimeField = models.DateTimeField(
-        null=True, blank=True, verbose_name=_("删除时间")
-    )
+    is_deleted = models.BooleanField(default=False, verbose_name=_("已删除"))
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("删除时间"))
 
     class Meta:
         abstract = True
+
+    def delete(self, *args: Any, **kwargs: Any) -> None:
+        """执行软删除操作，标记对象为已删除并记录删除时间。
+
+        :param args: 位置参数
+        :param kwargs: 关键字参数
+        :return: None
+        """
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 class SEOMixin(models.Model):
     """SEO 元信息混入：为页面/文章等提供标题与描述。"""
 
-    meta_title: models.CharField[str] = models.CharField(
-        max_length=255, blank=True, verbose_name=_("SEO 标题")
-    )
-    meta_description: models.CharField[str] = models.CharField(
-        max_length=500, blank=True, verbose_name=_("SEO 描述")
-    )
+    meta_title = models.CharField(max_length=255, blank=True, verbose_name=_("SEO 标题"))
+    meta_description = models.CharField(max_length=500, blank=True, verbose_name=_("SEO 描述"))
 
     class Meta:
         abstract = True
@@ -67,7 +81,7 @@ class SluggedModel(models.Model):
     子类可通过覆写 get_slug_source 指定 slug 的来源（默认取 title 字段）。
     """
 
-    slug: models.SlugField = models.SlugField(max_length=255, unique=True, verbose_name=_("Slug"))
+    slug = models.SlugField(max_length=255, unique=True, verbose_name=_("Slug"))
 
     class Meta:
         abstract = True
@@ -83,7 +97,7 @@ class SluggedModel(models.Model):
         """
         base = slugify(self.get_slug_source())[:50] or "item"
         candidate = base
-        Model: type[models.Model] = self.__class__
+        Model = self.__class__
         idx = 1
         while Model.objects.filter(slug=candidate).exclude(pk=self.pk).exists():  # type: ignore[attr-defined]
             candidate = f"{base}-{idx}"

@@ -53,12 +53,18 @@ class PostQuerySet(models.QuerySet["Post"]):
 
     def published(self) -> QuerySet:
         """
+        筛选已发布的文章。
 
-        :return:
+        仅包含状态为 PUBLISHED 且发布时间不晚于当前时间的文章。
         """
         return self.filter(status=Post.Status.PUBLISHED, published_at__lte=timezone.now())
 
     def featured_first(self) -> QuerySet:
+        """
+        优先展示置顶文章，按发布时间倒序排列。
+
+        :return: 排序后的查询集
+        """
         return self.order_by(models.F("is_featured").desc(nulls_last=True), "-published_at", "-id")
 
 
@@ -114,18 +120,44 @@ class Post(TimeStampedModel, SEOMixin, SluggedModel):
         return self.title
 
     def get_absolute_url(self) -> str:
+        """
+        获取文章的绝对 URL。
+
+        用于在模板中生成文章详情页链接，以及 Django Admin 中的“查看站点”按钮。
+
+        :return: 文章详情页的完整 URL 路径
+        """
         return reverse("blog:post_detail", kwargs={"slug": self.slug})
 
     @staticmethod
     def render_markdown(text: str) -> str:
+        """
+        将 Markdown 文本渲染为 HTML。
+
+        使用 markdown 库并启用以下扩展：
+        - extra: 包含常用语法如表格、定义列表等；
+        - codehilite: 代码高亮；
+        - toc: 生成目录；
+        - sane_lists: 更合理的列表解析；
+        - smarty: 智能引号替换。
+
+        :param text: 原始 Markdown 文本
+        :return: 渲染后的 HTML 字符串
+        """
         return md.markdown(
             text or "",
             extensions=["extra", "codehilite", "toc", "sane_lists", "smarty"],
-            output_format="html5",
+            output_format="html",
         )
 
     @staticmethod
     def estimate_reading_time(text: str) -> int:
+        """
+        估算阅读时长（分钟）。
+
+        :param text: 输入文本
+        :return: 阅读时长（分钟）
+        """
         words = len((text or "").split())
         minutes = max(1, int(round(words / 200.0)))
         return minutes
